@@ -8,13 +8,14 @@
 
 #import "ViewController.h"
 #import "stdlib.h"
+#import "math.h"
 
 @implementation ViewController
 {
   Calculator *myCalc;
   NSMutableString *displayMessage;
 }
-@synthesize  display, operand1, justCalc, currentNum, operation;
+@synthesize  display, operand1, justCalc, decimalPoint, currentNum, operation;
 
 - (void)viewDidLoad
 {
@@ -32,20 +33,21 @@
 
 -(void) processNumber: (double)number
 {
-  //So that when we get a mutliple digit number one digit at a time,
-  //we can properly update the string
+  int sigDig;
   currentNum = currentNum * 10 + number;
-  
+ 
   if(operand1)
   {
     myCalc.accumulator = currentNum;
-    [displayMessage appendString: [NSString stringWithFormat: @"%.lf", currentNum]];
+    sigDig = [self getFormattedFloat: myCalc.accumulator];
+    [displayMessage appendString: [NSString stringWithFormat: @"%.*lf", sigDig, currentNum]];
   }
   
   else
   {
     myCalc.secondOperand = currentNum;
-    [displayMessage appendString: [NSString stringWithFormat: @"%.lf", number]];
+    sigDig = [self getFormattedFloat: myCalc.secondOperand];
+    [displayMessage appendString: [NSString stringWithFormat: @"%.*lf", sigDig, number]];
   }
   
   self.display.text = displayMessage;
@@ -137,7 +139,39 @@
 
 -(IBAction) decimalKey
 {
+  decimalPoint = YES;
+  /*
+  [displayMessage appendString: @"."];
+  self.display.text = displayMessage;
+   */
+}
+
+-(IBAction) piKey
+{
+  if(operand1)
+  {
+    if(myCalc.accumulator == 0)
+    {
+      myCalc.accumulator = M_PI;
+      [displayMessage setString: @""];
+      self.display.text = displayMessage;
+    }
+    
+    else
+      myCalc.accumulator *= M_PI;
+  }
   
+  else
+  {
+    if(myCalc.secondOperand == 0)
+      myCalc.secondOperand = M_PI;
+    
+    else
+      myCalc.secondOperand *= M_PI;
+  }
+  
+  [displayMessage appendString: @"π"];
+  self.display.text = displayMessage;
 }
 
 -(IBAction) clearKey
@@ -145,6 +179,7 @@
   int random;
   operand1 = YES;
   justCalc = NO;
+  decimalPoint = NO;
   currentNum = 0;
   operation = '+';
   myCalc.accumulator = 0;
@@ -180,8 +215,7 @@
 
 -(IBAction) equalsKey
 {
-  double doubleTemp;
-  int intTemp, dummy, zeroCount = 0, sigDig;
+  int sigDig;
   NSString *opStr;
   switch(self.operation)
   {
@@ -205,23 +239,10 @@
   //Get the answer
   [self combineOperands: myCalc.accumulator withThe: myCalc.secondOperand];
   
-  //Format the trailing zeroes
-  doubleTemp = myCalc.accumulator * 1000000;
-  intTemp = (int) doubleTemp;
-  dummy = intTemp % 10;
-  intTemp /= 10;
-  
-  while(dummy == 0)
-  {
-    dummy = intTemp % 10;
-    intTemp /= 10;
-    zeroCount++;
-  }
-  
-  sigDig = 6 - zeroCount;
+  sigDig = [self getFormattedFloat: myCalc.accumulator];
   
   [displayMessage setString: @""];
-  [displayMessage appendString: [NSString stringWithFormat: @"%.*lf",sigDig, myCalc.accumulator]];
+  [displayMessage appendString: [NSString stringWithFormat: @"%.*lf", sigDig, myCalc.accumulator]];
   self.display.text = displayMessage;
   
   justCalc = YES;
@@ -253,6 +274,37 @@
 -(IBAction) storeValue
 {
   
+}
+
+-(int) getFormattedFloat: (double) itemToConvert
+{
+  double doubleTemp;
+  int intTemp, dummy, zeroCount = 0, sigDigs, length = 0;
+
+  doubleTemp = itemToConvert * 1000000;
+  
+  while( doubleTemp != 0 )
+  {
+    doubleTemp /= 10;
+    length++;
+  }
+  
+  doubleTemp = itemToConvert* 1000000;
+  intTemp = (int) doubleTemp;
+  dummy = intTemp % 10;
+  intTemp /= 10;
+  
+  
+  while(dummy == 0 && zeroCount < length)
+  {
+    dummy = intTemp % 10;
+    intTemp /= 10;
+    zeroCount++;
+  }
+  
+  sigDigs = 6 - zeroCount;
+  
+  return sigDigs;
 }
 
 @end
