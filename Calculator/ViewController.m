@@ -85,7 +85,7 @@
 {
   if(operand1)
     operand1 = NO;
-  
+    
   justCalc = NO;
   currentNum = 0;
   
@@ -243,6 +243,7 @@
   [displayMessage setString: @""];
   [displayMessage appendString: [NSString stringWithFormat: @"%i", myCalc.accumulator]];
   self.display.text = displayMessage;
+  myCalc.secondOperand = 0;
 }
 
 -(void) combineOperands:(int)firstOne withThe:(int)secondOne

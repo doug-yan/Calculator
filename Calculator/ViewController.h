@@ -12,8 +12,8 @@
 @interface ViewController : UIViewController
 @property (strong, nonatomic) IBOutlet UILabel *display;
 @property (nonatomic) BOOL operand1;
-@property (nonatomic) BOOL alreadyCalc;
 @property (nonatomic) BOOL justCalc;
+@property (nonatomic) BOOL justPressedEquals;
 @property (nonatomic) int currentNum;
 @property (nonatomic) char operation;
 
