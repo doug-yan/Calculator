@@ -30,7 +30,7 @@
   // Dispose of any resources that can be recreated.
 }
 
--(void) processNumber: (int)number
+-(void) processNumber: (double)number
 {
   //So that when we get a mutliple digit number one digit at a time,
   //we can properly update the string
@@ -39,13 +39,13 @@
   if(operand1)
   {
     myCalc.accumulator = currentNum;
-    [displayMessage appendString: [NSString stringWithFormat: @"%i", currentNum]];
+    [displayMessage appendString: [NSString stringWithFormat: @"%.lf", currentNum]];
   }
   
   else
   {
     myCalc.secondOperand = currentNum;
-    [displayMessage appendString: [NSString stringWithFormat: @"%i", number]];
+    [displayMessage appendString: [NSString stringWithFormat: @"%.lf", number]];
   }
   
   self.display.text = displayMessage;
@@ -135,12 +135,18 @@
   
 }
 
+-(IBAction) decimalKey
+{
+  
+}
+
 -(IBAction) clearKey
 {
   int random;
   operand1 = YES;
   justCalc = NO;
   currentNum = 0;
+  operation = '+';
   myCalc.accumulator = 0;
   myCalc.secondOperand = 0;
   [displayMessage setString: @""];
@@ -174,6 +180,8 @@
 
 -(IBAction) equalsKey
 {
+  double doubleTemp;
+  int intTemp, dummy, zeroCount = 0, sigDig;
   NSString *opStr;
   switch(self.operation)
   {
@@ -193,18 +201,34 @@
       opStr = @"/";
       break;
   }
-  printf( "This is the calculation being carried out: %i%c%i=", myCalc.accumulator, self.operation, myCalc.secondOperand);
+  
+  //Get the answer
   [self combineOperands: myCalc.accumulator withThe: myCalc.secondOperand];
-  printf("%i\n", myCalc.accumulator);
+  
+  //Format the trailing zeroes
+  doubleTemp = myCalc.accumulator * 1000000;
+  intTemp = (int) doubleTemp;
+  dummy = intTemp % 10;
+  intTemp /= 10;
+  
+  while(dummy == 0)
+  {
+    dummy = intTemp % 10;
+    intTemp /= 10;
+    zeroCount++;
+  }
+  
+  sigDig = 6 - zeroCount;
+  
   [displayMessage setString: @""];
-  [displayMessage appendString: [NSString stringWithFormat: @"%i", myCalc.accumulator]];
+  [displayMessage appendString: [NSString stringWithFormat: @"%.*lf",sigDig, myCalc.accumulator]];
   self.display.text = displayMessage;
   
   justCalc = YES;
 
 }
 
--(void) combineOperands:(int)firstOne withThe:(int)secondOne
+-(void) combineOperands:(double)firstOne withThe:(double)secondOne
 {
   switch(self.operation)
   {
@@ -224,6 +248,11 @@
       [myCalc divide];
       break;
   }
+}
+
+-(IBAction) storeValue
+{
+  
 }
 
 @end

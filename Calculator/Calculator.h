@@ -9,8 +9,8 @@
 #import <Foundation/Foundation.h>
 
 @interface Calculator : NSObject
-@property (nonatomic) int accumulator;
-@property (nonatomic) int secondOperand;
+@property (nonatomic) float accumulator;
+@property (nonatomic) float secondOperand;
 @property (nonatomic) char op;
 
 -(void) plus;

@@ -13,14 +13,14 @@
 @property (strong, nonatomic) IBOutlet UILabel *display;
 @property (nonatomic) BOOL operand1;
 @property (nonatomic) BOOL justCalc;
-@property (nonatomic) int currentNum;
+@property (nonatomic) double currentNum;
 @property (nonatomic) char operation;
 
 //Storing data from key presses
--(void) processNumber: (int) number; //used to display the digit to the screen
+-(void) processNumber: (double) number; //used to display the digit to the screen
 -(void) processOperation: (char) op;
 
-//Numerical Actions
+//Operational Actions
 -(IBAction) plusKey;
 -(IBAction) minusKey;
 -(IBAction) multiplyKey;
@@ -28,11 +28,13 @@
 
 //Inputting Numbers
 -(IBAction) numKey: (UIButton*) sender;
+-(IBAction) decimalKey;
 
 //Miscellaneous Functions
 -(IBAction) clearKey;
 -(IBAction) equalsKey;
--(void) combineOperands: (int)firstOne withThe: (int)secondOne;
+-(void) combineOperands: (double)firstOne withThe: (double)secondOne;
+-(IBAction) storeValue;
 /*
  Functions to add
  sin, cos, constants (pi, e), store, recall
