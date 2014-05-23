@@ -14,44 +14,14 @@
   Calculator *myCalc;
   NSMutableString *displayMessage;
 }
-@synthesize  display, operand1, alreadyCalc, justCalc, currentNum, operation;
+@synthesize  display, operand1, justCalc, currentNum, operation;
 
 - (void)viewDidLoad
 {
-  int random;
   [super viewDidLoad];
   myCalc = [[Calculator alloc] init];
-  myCalc.accumulator = 0;
-  myCalc.secondOperand = 0;
-  operand1 = YES;
-  alreadyCalc = NO;
-  justCalc = NO;
   displayMessage = [NSMutableString stringWithCapacity:40];
-
-  random = arc4random() % 5;
-  switch(random)
-  {
-    case 0:
-      [displayMessage setString: @"Don't do drugs."];
-      break;
-      
-    case 1:
-      [displayMessage setString: @"Stay in school"];
-      break;
-      
-    case 2:
-      [displayMessage setString: @"Eat vegetables"];
-      break;
-      
-    case 3:
-      [displayMessage setString: @"Don't do school"];
-      break;
-      
-    case 4:
-      [displayMessage setString: @"Stay in drugs"];
-      break;
-  }
-  self.display.text = displayMessage;
+  [self clearKey];
 }
 
 - (void)didReceiveMemoryWarning
@@ -85,9 +55,9 @@
 {
   if(operand1)
     operand1 = NO;
-    
-  justCalc = NO;
-  currentNum = 0;
+  
+  else
+    [self combineOperands: myCalc.accumulator withThe: myCalc.secondOperand];
   
   //Update the display
   NSString *opStr;
@@ -114,48 +84,39 @@
   
   [displayMessage appendString: opStr];
   self.display.text = displayMessage;
+  
+  justCalc = NO;
+  currentNum = 0;
+  myCalc.secondOperand = 0;
 }
 
 -(IBAction) plusKey
 {
   myCalc.op = '+';
-  //Check to see if there was already a calculation performed
-  if(alreadyCalc)
-    [self combineOperands: myCalc.accumulator withThe: myCalc.secondOperand];
-  
   [self processOperation: '+'];
 }
 
 -(IBAction) minusKey
 {
   myCalc.op = '-';
-  if(alreadyCalc)
-    [self combineOperands: myCalc.accumulator withThe: myCalc.secondOperand];
-  
   [self processOperation: '-'];
 }
 
 -(IBAction) multiplyKey
 {
   myCalc.op = '*';
-  if(alreadyCalc)
-    [self combineOperands: myCalc.accumulator withThe: myCalc.secondOperand];
-  
   [self processOperation: '*'];
 }
 
 -(IBAction) divideKey
 {
   myCalc.op = '/';
-  if(alreadyCalc)
-    [self combineOperands: myCalc.accumulator withThe: myCalc.secondOperand];
-  
   [self processOperation: '/'];
 }
 
 -(IBAction) numKey: (UIButton*) sender
 {
-  if([self isDefault])
+  if(operand1)
   {
     [displayMessage setString: @""];
     self.display.text = displayMessage;
@@ -178,7 +139,7 @@
 {
   int random;
   operand1 = YES;
-  alreadyCalc = NO;
+  justCalc = NO;
   currentNum = 0;
   myCalc.accumulator = 0;
   myCalc.secondOperand = 0;
@@ -214,8 +175,6 @@
 -(IBAction) equalsKey
 {
   NSString *opStr;
-  alreadyCalc = YES;
-  justCalc = YES;
   switch(self.operation)
   {
     case '+':
@@ -234,16 +193,13 @@
       opStr = @"/";
       break;
   }
-  myCalc.secondOperand = currentNum;
-  currentNum = 0;
-  NSLog(@"This is the calculation being taken out: %i%c%i=", myCalc.accumulator, self.operation, myCalc.secondOperand);
   [self combineOperands: myCalc.accumulator withThe: myCalc.secondOperand];
-  NSLog(@"%i", myCalc.accumulator);
-  NSLog(@"This is the value of the new accumulator: %i", myCalc.accumulator);
   [displayMessage setString: @""];
   [displayMessage appendString: [NSString stringWithFormat: @"%i", myCalc.accumulator]];
   self.display.text = displayMessage;
-  myCalc.secondOperand = 0;
+  
+  justCalc = YES;
+
 }
 
 -(void) combineOperands:(int)firstOne withThe:(int)secondOne
@@ -268,11 +224,4 @@
   }
 }
 
--(BOOL) isDefault
-{
-  if( operand1 && !alreadyCalc )
-    return YES;
-  
-  return NO;
-}
 @end

@@ -13,7 +13,6 @@
 @property (strong, nonatomic) IBOutlet UILabel *display;
 @property (nonatomic) BOOL operand1;
 @property (nonatomic) BOOL justCalc;
-@property (nonatomic) BOOL justPressedEquals;
 @property (nonatomic) int currentNum;
 @property (nonatomic) char operation;
 
@@ -34,7 +33,6 @@
 -(IBAction) clearKey;
 -(IBAction) equalsKey;
 -(void) combineOperands: (int)firstOne withThe: (int)secondOne;
--(BOOL) isDefault;
 /*
  Functions to add
  sin, cos, constants (pi, e), store, recall
