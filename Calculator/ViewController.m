@@ -56,7 +56,7 @@
   if(operand1)
     operand1 = NO;
   
-  else
+  else if( !operand1 && !justCalc)
     [self combineOperands: myCalc.accumulator withThe: myCalc.secondOperand];
   
   //Update the display
@@ -193,7 +193,9 @@
       opStr = @"/";
       break;
   }
+  printf( "This is the calculation being carried out: %i%c%i=", myCalc.accumulator, self.operation, myCalc.secondOperand);
   [self combineOperands: myCalc.accumulator withThe: myCalc.secondOperand];
+  printf("%i\n", myCalc.accumulator);
   [displayMessage setString: @""];
   [displayMessage appendString: [NSString stringWithFormat: @"%i", myCalc.accumulator]];
   self.display.text = displayMessage;
