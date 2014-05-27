@@ -9,36 +9,29 @@
 #import "Calculator.h"
 
 @implementation Calculator
-@synthesize accumulator, secondOperand, op;
 
 -(void) plus
 {
-  accumulator = accumulator + secondOperand;
+  self.accumulator = self.accumulator + self.secondOperand;
 }
 
 -(void) minus
 {
-  accumulator = accumulator - secondOperand;
+  self.accumulator = self.accumulator - self.secondOperand;
 }
 
 -(void) multiply
 {
-  accumulator = accumulator * secondOperand;
+  self.accumulator = self.accumulator * self.secondOperand;
 }
 
 -(void) divide
 {
-  if( secondOperand == 0 )
-    accumulator = NAN;
+  if( self.secondOperand == 0 )
+    self.accumulator = NAN;
   
   else
-    accumulator = accumulator/ secondOperand;
-}
-
--(NSString *) convertToString: (int) itemToConvert;
-{
-  return nil;
-  //return [NSString stringWithFormat: @"%i", itemToConvert];
+    self.accumulator = self.accumulator / self.secondOperand;
 }
 
 @end

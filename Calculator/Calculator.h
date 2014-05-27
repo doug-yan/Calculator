@@ -11,13 +11,12 @@
 @interface Calculator : NSObject
 @property (nonatomic) double accumulator;
 @property (nonatomic) double secondOperand;
+@property (nonatomic) double storeValue;
 @property (nonatomic) char op;
 
 -(void) plus;
 -(void) minus;
 -(void) multiply;
 -(void) divide;
-
--(NSString *) convertToString: (int) itemToConvert;
 
 @end

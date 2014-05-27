@@ -35,14 +35,12 @@
 //Miscellaneous Functions
 -(IBAction) clearKeyPressed;
 -(IBAction) equalsKeyPressed;
--(void) combineOperandsIntoAccumulator: (double)firstOne
-                               withThe: (double)secondOne;
--(IBAction) storeValue;
+-(void) combineOperandsIntoAccumulator;
 
--(int) formatFloat: (double) itemToConvert;
+-(int) getNumberOfSignificantDigits: (double) itemToConvert;
 /*
  Functions to add
- sin, cos, constants (pi, e), store, recall
+ sin, cos, store, recall
  convert to fraction, switch to double
  set decimal accuracy
  */

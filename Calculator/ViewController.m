@@ -16,7 +16,9 @@
   NSMutableString *displayMessage;
 }
 
-- (void)viewDidLoad
+
+//Instaniate objects and clear all data in the calculator
+-(void)viewDidLoad
 {
   [super viewDidLoad];
   myCalc = [[Calculator alloc] init];
@@ -24,29 +26,33 @@
   [self clearKeyPressed];
 }
 
-- (void)didReceiveMemoryWarning
+-(void)didReceiveMemoryWarning
 {
   [super didReceiveMemoryWarning];
   // Dispose of any resources that can be recreated.
 }
 
+
 -(void) putNumberInDisplayAndCalculator: (double)number
 {
   int sigDig;
-
+  
+  //Update the current number that we are working with
   self.currentNum = self.currentNum * 10 + number;
  
+  //If on the first operand, store the information in the accumulator
   if(self.isOperand1)
   {
     myCalc.accumulator = self.currentNum;
-    sigDig = [self formatFloat: myCalc.accumulator];
+    sigDig = [self getNumberOfSignificantDigits: myCalc.accumulator];
     [displayMessage appendString: [NSString stringWithFormat: @"%.*lf", sigDig, self.currentNum]];
   }
   
+  //Otherwise, store information in the second operand
   else
   {
     myCalc.secondOperand = self.currentNum;
-    sigDig = [self formatFloat: myCalc.secondOperand];
+    sigDig = [self getNumberOfSignificantDigits: myCalc.secondOperand];
     [displayMessage appendString: [NSString stringWithFormat: @"%.*lf", sigDig, number]];
   }
   
@@ -57,10 +63,10 @@
 {
   if(self.isOperand1)
     self.isOperand1 = NO;
-  
+ 
+  //If more than two operands are being entered, combine the first two into the accumulator
   else if( !self.isOperand1 && !self.isJustCalc)
-    [self combineOperandsIntoAccumulator: myCalc.accumulator
-                                 withThe: myCalc.secondOperand];
+    [self combineOperandsIntoAccumulator];
   
   //Update the display
   NSString *opStr;
@@ -125,6 +131,8 @@
     self.display.text = displayMessage;
   }
   
+  //If we just performed a calculator, then clear
+  //the information in the calculator and start over
   if(self.isJustCalc)
   {
     [self clearKeyPressed];
@@ -149,6 +157,7 @@
 
 -(IBAction) piKeyPressed
 {
+  //Reset if calculation just performed
   if(self.isJustCalc)
   {
     [self clearKeyPressed];
@@ -156,6 +165,15 @@
     self.isJustCalc = NO;
   }
   
+  /*
+   If we are on the first operand and there wasn't
+   anything in the accumulator beforehand, set
+   accumulator to value of pi. Otherwise, multiply
+   whatever was in the accumulator with pi.
+   
+   If we are on the second operand, we make the
+   same checks.
+   */
   if(self.isOperand1)
   {
     if(myCalc.accumulator == 0)
@@ -178,6 +196,7 @@
       myCalc.secondOperand *= M_PI;
   }
   
+  //Update message to the screen
   [displayMessage appendString: @"π"];
   self.display.text = displayMessage;
 }
@@ -192,6 +211,7 @@
   self.operation = '+';
   myCalc.accumulator = 0;
   myCalc.secondOperand = 0;
+  myCalc.storeValue = 0;
   [displayMessage setString: @""];
   self.display.text = displayMessage;
   
@@ -245,10 +265,9 @@
   }
   
   //Get the answer
-  [self combineOperandsIntoAccumulator: myCalc.accumulator
-                               withThe: myCalc.secondOperand];
+  [self combineOperandsIntoAccumulator];
   
-  sigDig = [self formatFloat: myCalc.accumulator];
+  sigDig = [self getNumberOfSignificantDigits: myCalc.accumulator];
   
   [displayMessage setString: @""];
   [displayMessage appendString: [NSString stringWithFormat: @"%.*lf", sigDig, myCalc.accumulator]];
@@ -258,8 +277,7 @@
 
 }
 
--(void) combineOperandsIntoAccumulator:(double)firstOne
-                               withThe:(double)secondOne
+-(void) combineOperandsIntoAccumulator
 {
   switch(self.operation)
   {
@@ -281,12 +299,19 @@
   }
 }
 
--(IBAction) storeValue
-{
-  
-}
-
--(int) formatFloat: (double) itemToConvert
+/*
+ Slightly convoluted algorithm here:
+ 
+ - First, find the length of the float with all the trailing zeros.
+ - Then, multiply the parameter by 1000000 to get rid of the trailing 0's.
+ - Then, start popping off end digits. If it is a zero, increment zeroCount.
+    - If we pop off a non-zero integer, we know we have found a significant digit.
+ - Finally, subtract the zeroCount from 6 in order to get the number of significant
+    digits.
+ - If the zeroCount is greater than 6, we know the original number ended in zero and 
+    return 0;
+ */
+-(int) getNumberOfSignificantDigits: (double) itemToConvert
 {
   if(itemToConvert == 0)
     return 0;
@@ -302,7 +327,7 @@
     length++;
   }
   
-  doubleTemp = itemToConvert* 1000000;
+  doubleTemp = itemToConvert * 1000000;
   intTemp = (int) doubleTemp;
   dummy = intTemp % 10;
   intTemp /= 10;
@@ -315,7 +340,11 @@
     zeroCount++;
   }
   
-  sigDigs = 6 - zeroCount;
+  if( zeroCount <= 6 )
+    sigDigs = 6 - zeroCount;
+  
+  else
+    sigDigs = 0;
   
   return sigDigs;
 }
